@@ -52,6 +52,10 @@ body {
   border-radius: 20px;
   transition: all 0.3s ease;
 }
+
+a {
+  text-decoration: none;
+}
 @media screen and (max-width: 900px) {
   .category-btn {
     margin: 10px;
