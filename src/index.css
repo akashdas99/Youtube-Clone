@@ -27,8 +27,8 @@ body {
 }
 
 .react-player {
-  height: 77vh !important;
-  width: 100% !important;
+  height: 60vh !important;
+  width: 90% !important;
 }
 
 .search-bar {
@@ -41,7 +41,7 @@ body {
   text-transform: capitalize;
   display: flex;
   align-items: center;
-  justify-content: start;
+  justify-content: flex-start;
   cursor: pointer;
   background: transparent;
   outline: none;
