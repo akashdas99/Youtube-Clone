@@ -20,7 +20,7 @@ const VideoCard = ({
       sx={{
         width: { xs: "100%", sm: "358px", md: "320px" },
         boxShadow: "none",
-        borderRadius: 0,
+        borderRadius: 2,
       }}
     >
       <Link
@@ -38,8 +38,8 @@ const VideoCard = ({
           to={videoId ? `/video/${videoId}` : demoVideoUrl}
           style={{ textDecoration: "none" }}
         >
-          <Typography variant="subtitle1" fontWeight="bold" color="#fff">
-            {snippet?.title.slice(0, 60) || demoVideoTitle.slice(0, 60)}
+          <Typography variant="subtitle2" fontWeight="bold" color="#fff">
+            {snippet?.title.slice(0, 50) || demoVideoTitle.slice(0, 60)}
           </Typography>
         </Link>
         <Link
