@@ -1,17 +1,26 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, CircularProgress, Stack } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchFromAPI } from "../utils/fetchFromAPI";
 import { Videos } from "./";
 
 const SearchFeed = () => {
-  const [videos, setVideos] = useState([]);
+  const [videos, setVideos] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [nextPageToken, setnextPageToken] = useState("");
   const { searchTerm } = useParams();
   useEffect(() => {
-    fetchFromAPI(`search?part=snippet&q=${searchTerm}`).then((data) =>
-      setVideos(data.items)
-    );
-  }, [searchTerm]);
+    if (loading) {
+      fetchFromAPI(
+        `search?part=snippet&q=${searchTerm}&pageToken=${nextPageToken}`
+      ).then((data) => {
+        if (!videos) setVideos(data.items);
+        else setVideos([...videos, ...data.items]);
+        setnextPageToken(data.nextPageToken);
+      });
+      setLoading(false);
+    }
+  }, [loading]);
 
   return (
     <Box p={2} sx={{ overflowY: "auto", height: "90vh", flex: 2 }}>
@@ -20,7 +29,11 @@ const SearchFeed = () => {
         {searchTerm && <span style={{ color: "#f31503" }}>{searchTerm}</span>}{" "}
         videos
       </Typography>
-      {videos && <Videos videos={videos} />}
+      {videos && <Videos videos={videos} setLoading={setLoading} />}
+      <Stack alignItems="center" spacing={5} padding={4}>
+        <CircularProgress />
+      </Stack>
+      {loading && <CircularProgress />}
     </Box>
   );
 };

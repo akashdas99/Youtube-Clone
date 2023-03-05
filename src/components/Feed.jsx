@@ -1,17 +1,26 @@
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { fetchFromAPI } from "../utils/fetchFromAPI";
 import { SideBar, Videos } from "./";
 
 const Feed = () => {
   const [selectedCategory, setSelectedCategory] = useState("Latest");
+  const [nextPageToken, setnextPageToken] = useState("");
   const [videos, setVideos] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchFromAPI(`search?part=snippet&q=${selectedCategory}`).then((data) =>
-      setVideos(data.items)
-    );
-  }, [selectedCategory]);
+    if (loading) {
+      fetchFromAPI(
+        `search?part=snippet&q=${selectedCategory}&pageToken=${nextPageToken}`
+      ).then((data) => {
+        if (!videos) setVideos(data.items);
+        else setVideos([...videos, ...data.items]);
+        setnextPageToken(data.nextPageToken);
+      });
+      setLoading(false);
+    }
+  }, [selectedCategory, loading]);
 
   return (
     <Stack sx={{ flexDirection: { sx: "column", md: "row" } }}>
@@ -25,6 +34,8 @@ const Feed = () => {
         <SideBar
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
+          setLoading={setLoading}
+          setVideos={setVideos}
         />
         <Typography
           className="copyright"
@@ -43,7 +54,11 @@ const Feed = () => {
         >
           {selectedCategory} <span style={{ color: "#f31503" }}>videos</span>
         </Typography>
-        {videos && <Videos videos={videos} />}
+        {videos && <Videos videos={videos} setLoading={setLoading} />}
+        <Stack alignItems="center" spacing={5} padding={4}>
+          <CircularProgress />
+        </Stack>
+        {loading && <CircularProgress />}
       </Box>
     </Stack>
   );
