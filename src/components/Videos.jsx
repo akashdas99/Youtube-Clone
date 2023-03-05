@@ -1,9 +1,20 @@
 import { Box, Stack } from "@mui/material";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { VideoCard, ChannelCard } from "./";
 
-const Videos = ({ videos, direction }) => {
-  // if (!videos?.lenght) return "Loading....";
+const Videos = ({ videos, setLoading, direction }) => {
+  const lastElement = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setLoading(true);
+        observer.unobserve(lastElement.current);
+      }
+    });
+    if (lastElement) observer.observe(lastElement.current);
+  }, [videos]);
+
   return (
     <Stack
       direction={direction || "row"}
@@ -11,12 +22,23 @@ const Videos = ({ videos, direction }) => {
       justifyContent="start"
       gap={2}
     >
-      {videos.map((item, idx) => (
-        <Box key={idx}>
-          {item.id.videoId && <VideoCard video={item} />}
-          {item.id.channelId && <ChannelCard channelDetail={item} />}
-        </Box>
-      ))}
+      {videos.map((item, idx) => {
+        if (idx === videos.length - 1) {
+          return (
+            <Box key={idx} ref={lastElement}>
+              {item.id.videoId && <VideoCard video={item} />}
+              {item.id.channelId && <ChannelCard channelDetail={item} />}
+            </Box>
+          );
+        } else {
+          return (
+            <Box key={idx}>
+              {item.id.videoId && <VideoCard video={item} />}
+              {item.id.channelId && <ChannelCard channelDetail={item} />}
+            </Box>
+          );
+        }
+      })}
     </Stack>
   );
 };
