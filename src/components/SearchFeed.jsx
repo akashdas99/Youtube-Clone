@@ -21,6 +21,12 @@ const SearchFeed = () => {
     }
   }, [loading]);
 
+  useEffect(() => {
+    setVideos(null);
+    setnextPageToken("");
+    setLoading(true);
+  }, [searchTerm]);
+
   return (
     <Box p={2} sx={{ overflowY: "auto", height: "90vh", flex: 2 }}>
       <Typography variant="h4" fontWeight="bold" mb={2} sx={{ color: "white" }}>
