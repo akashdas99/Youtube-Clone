@@ -1,7 +1,7 @@
 import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { fetchFromAPI } from "../utils/fetchFromAPI";
 import { SideBar, Videos } from "./";
+import { fetchNextPage } from "../utils/fetchNextPage";
 
 const Feed = () => {
   const [selectedCategory, setSelectedCategory] = useState("Latest");
@@ -11,16 +11,14 @@ const Feed = () => {
 
   useEffect(() => {
     if (loading) {
-      fetchFromAPI(
-        `search?part=snippet&q=${selectedCategory}&pageToken=${nextPageToken}`
-      ).then((data) => {
+      fetchNextPage(selectedCategory, nextPageToken).then((data) => {
         if (!videos) setVideos(data.items);
-        else setVideos([...videos, ...data.items]);
+        else setVideos((videos) => [...videos, ...data.items]);
         setnextPageToken(data.nextPageToken);
+        setLoading(false);
       });
-      setLoading(false);
     }
-  }, [selectedCategory, loading]);
+  }, [loading]);
 
   return (
     <Stack sx={{ flexDirection: { sx: "column", md: "row" } }}>
@@ -56,9 +54,8 @@ const Feed = () => {
         </Typography>
         {videos && <Videos videos={videos} setLoading={setLoading} />}
         <Stack alignItems="center" spacing={5} padding={4}>
-          <CircularProgress />
+          {loading && <CircularProgress />}
         </Stack>
-        {loading && <CircularProgress />}
       </Box>
     </Stack>
   );
